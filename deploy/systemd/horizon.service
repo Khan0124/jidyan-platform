@@ -1,0 +1,21 @@
+[Unit]
+Description=Laravel Horizon for Jidyan
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+ExecStart=/usr/bin/php /var/www/jidyan/artisan horizon
+ExecStop=/usr/bin/php /var/www/jidyan/artisan horizon:terminate
+TimeoutStopSec=60
+KillSignal=SIGTERM
+RestartSec=5
+StandardOutput=append:/var/log/jidyan/horizon.log
+StandardError=append:/var/log/jidyan/horizon-error.log
+WorkingDirectory=/var/www/jidyan
+Environment="APP_ENV=production"
+Environment="QUEUE_CONNECTION=redis"
+
+[Install]
+WantedBy=multi-user.target

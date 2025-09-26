@@ -1,0 +1,68 @@
+{
+    "name": "jidyan/platform",
+    "type": "project",
+    "description": "Jidyan football talent platform built with Laravel 11",
+    "keywords": ["laravel", "jidyan"],
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/horizon": "^5.0",
+        "laravel/telescope": "^5.0",
+        "laravel/breeze": "^2.0",
+        "livewire/livewire": "^3.4",
+        "spatie/laravel-permission": "^6.0",
+        "spatie/laravel-medialibrary": "^11.0",
+        "spatie/laravel-activitylog": "^4.9",
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/penman": "^1.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.21",
+        "laravel/pint": "^1.15",
+        "laravel/sail": "^2.0",
+        "nunomaduro/collision": "^8.0",
+        "nunomaduro/larastan": "^2.9",
+        "pestphp/pest": "^2.5",
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "phpstan/phpstan": "^1.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/Support/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ],
+        "pint": "pint",
+        "test": "pest",
+        "phpstan": "phpstan analyse"
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
