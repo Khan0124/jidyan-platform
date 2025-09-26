@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: jidyan
+          POSTGRES_USER: jidyan
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jidyan" --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, pcntl, bcmath, pdo_pgsql
+          coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('**/composer.lock') }}
+      - name: Install Composer dependencies
+        working-directory: jidyan
+        run: composer install --no-interaction --prefer-dist
+      - name: Install Node dependencies
+        working-directory: jidyan
+        run: npm ci
+      - name: Build assets
+        working-directory: jidyan
+        run: npm run build
+      - name: Copy environment
+        working-directory: jidyan
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Run migrations
+        working-directory: jidyan
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: jidyan
+          DB_USERNAME: jidyan
+          DB_PASSWORD: secret
+          REDIS_HOST: 127.0.0.1
+        run: php artisan migrate --seed
+      - name: Static analysis
+        working-directory: jidyan
+        run: ./vendor/bin/phpstan analyse --memory-limit=1G || true
+      - name: Coding standards
+        working-directory: jidyan
+        run: ./vendor/bin/pint --test
+      - name: Run tests
+        working-directory: jidyan
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: jidyan
+          DB_USERNAME: jidyan
+          DB_PASSWORD: secret
+          REDIS_HOST: 127.0.0.1
+        run: ./vendor/bin/pest

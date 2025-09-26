@@ -1,0 +1,15 @@
+/node_modules
+/public/build
+/vendor
+.env
+.phpunit.result.cache
+.php-cs-fixer.cache
+/storage/*.key
+/storage/logs/*.log
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+Homestead.yaml
+Homestead.json
+/.idea
+/.vscode
